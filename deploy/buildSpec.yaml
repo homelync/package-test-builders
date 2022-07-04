@@ -1,0 +1,21 @@
+
+version: 0.2
+phases:
+  install:
+    commands:
+      - npm install && npm install -g mocha
+      - echo no additional commands to run
+  build:
+    commands:
+      - npm run test:unit
+      - npm run build
+  post_build:
+    commands:
+      - aws cloudformation package --template-file ./deploy/samTemplate.yaml --kms-key-id 06959fc2-0ae8-444e-916f-051791be8cd5
+                                   --s3-bucket codepipeline-eu-west-2-564428578501
+                                   --output-template-file outputSamTemplate.yaml
+artifacts:
+  type: zip
+  files:
+    - ./deploy/samTemplate.yaml
+    - outputSamTemplate.yaml

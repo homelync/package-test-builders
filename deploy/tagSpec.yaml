@@ -1,0 +1,22 @@
+version: 0.2
+env:
+  variables:
+    BRANCH_NAME: "master"
+    MAJOR_VERSION: "0"
+    MINOR_VERSION: "0"
+    PROJECT: connector-lora-event
+    GIT_REPO: "@github.com/homelync/"
+  parameter-store:
+    GIT_USER: "AS-GIT-USER-NAME"
+    GIT_PASS: "AS-GIT-PASSWORD"
+phases:
+  pre_build:
+    commands:
+      - git clone -b $BRANCH_NAME "https://${GIT_PASS}${GIT_REPO}${PROJECT}.git"
+      - git config --global user.email "build@homelync.io"
+      - git config --global user.name "build"
+  build:
+    commands:
+      - cd $PROJECT
+      - cd deploy
+      - bash git_taging.sh $CODEBUILD_RESOLVED_SOURCE_VERSION
