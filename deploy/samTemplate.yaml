@@ -1,0 +1,47 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Ingest events originating from LoraWan sensors
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+      - local
+      - development
+      - test
+      - production
+    Description: environment.
+  SecurityGroupIds:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Description: List of Security Groups to add to instance
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: List of SubnetIds to add to instance
+  RoleArn:
+    Type: String
+    Description: Role Arn to add to the instance
+Resources:
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs10.x
+      Timeout: 900
+      Description: !Sub
+        - Ingest events originating from LoraWan sensors - ${Environment}
+        - { Environment: !Ref 'Environment' }
+      FunctionName: !Sub
+        - connector-lora-event-${Environment}
+        - { Environment: !Ref 'Environment' }
+      CodeUri: ../dist
+      Environment:
+        Variables:
+          TZ: 'UTC'
+          NODE_ENV:
+            Ref: Environment
+          PYTHON_ENV:
+            Ref: Environment
+      Role: !Ref RoleArn
+      VpcConfig:
+        SubnetIds: !Ref SubnetIds
+        SecurityGroupIds: !Ref SecurityGroupIds
