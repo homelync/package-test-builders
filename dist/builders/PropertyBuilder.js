@@ -79,6 +79,7 @@ class PropertyBuilder {
             postcode: (0, randomstring_1.generate)(6),
             country: 'United Kingdom'
         };
+        const reference = (0, randomstring_1.generate)(10);
         const addressId = await new ObjectBuilder_1.ObjectBuilder(this.connection).insertRaw('address', address);
         const geoId = await new ObjectBuilder_1.ObjectBuilder(this.connection).insertRaw('geo', {
             latitude: 100,
@@ -94,12 +95,22 @@ class PropertyBuilder {
         if (this.landlordReference) {
             additional.landlordReference = this.landlordReference;
         }
+        if (!additional.displayReference) {
+            additional.displayReference = reference;
+        }
         const property = await new ObjectBuilder_1.ObjectBuilder(this.connection)
             .withRandom()
+            .withReference(reference)
             .insert('property', additional);
         if (this.key && this.value)
             await this.connection.knexRaw().raw(`insert into propertyidentity (propertyid, \`key\`, value) values ('${property.id}', '${this.key}', '${this.value}');`);
         return property;
+    }
+    async removeTestProperty(propertyId) {
+        const property = await this.connection.builder('property').where('id', '=', propertyId);
+        await this.connection.builder('propertyIdentity').delete().where('propertyId', '=', propertyId);
+        await this.connection.builder('property').delete().where('id', '=', propertyId);
+        await this.connection.builder('address').delete().where('id', '=', property[0].addressId);
     }
 }
 exports.PropertyBuilder = PropertyBuilder;

@@ -1,9 +1,14 @@
 import { resolve as pathResolve } from 'path';
 import { config } from 'dotenv';
+const fs = require('fs');
 
 const env = process.env;
 const nodeEnv = env.NODE_ENV || 'local';
-config({ path: pathResolve(__dirname, `../env/.env.${nodeEnv}`) });
+let path = pathResolve(__dirname, `../../src/env/.env.${nodeEnv}`);
+if (!fs.existsSync(path)) {
+    path = pathResolve(__dirname, `../../env/.env.${nodeEnv}`);
+}
+config({ path: path });
 
 const baseConfiguration = {
     cache: {

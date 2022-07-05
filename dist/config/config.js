@@ -3,9 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.configuration = void 0;
 const path_1 = require("path");
 const dotenv_1 = require("dotenv");
+const fs = require('fs');
 const env = process.env;
 const nodeEnv = env.NODE_ENV || 'local';
-(0, dotenv_1.config)({ path: (0, path_1.resolve)(__dirname, `../env/.env.${nodeEnv}`) });
+let path = (0, path_1.resolve)(__dirname, `../../src/env/.env.${nodeEnv}`);
+if (!fs.existsSync(path)) {
+    path = (0, path_1.resolve)(__dirname, `../../env/.env.${nodeEnv}`);
+}
+(0, dotenv_1.config)({ path: path });
 const baseConfiguration = {
     cache: {
         ttlSecs: parseInt(env.CACHE_TTL_SECS || '0')
@@ -45,7 +50,7 @@ const baseConfiguration = {
     environment: nodeEnv,
     SQL: {
         db: env.SQL_DB,
-        username: env.SQL_HOST,
+        username: env.SQL_USERNAME,
         password: env.SQL_PASSWORD,
         host: env.SQL_HOST,
         port: Number(env.SQL_PORT),

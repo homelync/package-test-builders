@@ -15,3 +15,11 @@ export async function CreateProperty(landlordId?: string): Promise<Property> {
 
     return property;
 }
+
+export async function RemoveProperty(propertyid: string): Promise<void> {
+
+    const connection: SqlDbConnection = new SqlDbConnection();
+
+    await new PropertyBuilder(connection).removeTestProperty(propertyid);
+
+}
