@@ -19,4 +19,5 @@ export declare class PropertyBuilder {
     withIdentifier(key: string, value: string): PropertyBuilder;
     buildCreateModel(landlordReference: any): Property;
     insertRandom(): Promise<BasicEntity>;
+    removeTestProperty(propertyId: string): Promise<void>;
 }
